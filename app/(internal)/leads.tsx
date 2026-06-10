@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert
+  View, Text, StyleSheet, ScrollView, TouchableOpacity
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,43 @@ import { Colors, Typography, Spacing, BorderRadius } from '../../src/theme/token
 import { MOCK_LEADS } from '../../src/data/mockData';
 import { useLeadStore } from '../../src/store/leadStore';
 import { Lead, LeadStatus } from '../../src/types';
+import { Alert } from '../../src/utils/alert';
+
+const mapBackendStatus = (status: string): LeadStatus => {
+  switch (status) {
+    case 'new':
+      return 'new';
+    case 'contacted':
+    case 'qualified':
+      return 'meeting_scheduled';
+    case 'proposal_sent':
+    case 'negotiation':
+      return 'proposal_sent';
+    case 'won':
+      return 'approved';
+    case 'lost':
+      return 'rejected';
+    default:
+      return 'new';
+  }
+};
+
+const mapFrontendStatusToBackend = (status: LeadStatus): string => {
+  switch (status) {
+    case 'new':
+      return 'new';
+    case 'meeting_scheduled':
+      return 'contacted';
+    case 'proposal_sent':
+      return 'proposal_sent';
+    case 'approved':
+      return 'won';
+    case 'rejected':
+      return 'lost';
+    default:
+      return 'new';
+  }
+};
 
 const STATUS_COLUMNS: { status: LeadStatus; label: string; variant: any }[] = [
   { status: 'new', label: 'New', variant: 'lead_new' },
@@ -50,7 +87,7 @@ export default function LeadsScreen() {
       email: isReal ? l.contact_email : l.email,
       phone: isReal ? l.contact_phone : l.phone,
       service_interest: isReal ? 'Software Services' : l.service_interest,
-      status: l.status as LeadStatus,
+      status: isReal ? mapBackendStatus(l.status) : (l.status as LeadStatus),
       notes: l.notes,
       created_at: isReal ? new Date(l.created_at).toISOString().split('T')[0] : l.created_at,
     };
@@ -79,7 +116,7 @@ export default function LeadsScreen() {
             if (leadId.startsWith('l')) {
               Alert.alert('Status Updated', 'Mock lead updated locally.');
             } else {
-              await updateLead(parseInt(leadId, 10), { status: next });
+              await updateLead(parseInt(leadId, 10), { status: mapFrontendStatusToBackend(next) });
             }
           }
         },
@@ -97,7 +134,7 @@ export default function LeadsScreen() {
           if (leadId.startsWith('l')) {
             Alert.alert('Status Updated', 'Mock lead rejected locally.');
           } else {
-            await updateLead(parseInt(leadId, 10), { status: 'rejected' });
+            await updateLead(parseInt(leadId, 10), { status: 'lost' });
           }
         }
       },

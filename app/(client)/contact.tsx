@@ -8,12 +8,13 @@ import {
   Dimensions,
   Platform,
   TextInput,
-  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Alert } from '../../src/utils/alert';
+
 
 const { width: SCREEN_W } = Dimensions.get('window');
 

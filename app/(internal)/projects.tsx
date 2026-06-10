@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Modal
+  View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,6 +14,8 @@ import { MOCK_PROJECTS, MOCK_USERS } from '../../src/data/mockData';
 import { useProjectStore } from '../../src/store/projectStore';
 import { useEmployeeStore } from '../../src/store/employeeStore';
 import { Project, User } from '../../src/types';
+import { Alert } from '../../src/utils/alert';
+
 
 export default function InternalProjectsScreen() {
   const insets = useSafeAreaInsets();

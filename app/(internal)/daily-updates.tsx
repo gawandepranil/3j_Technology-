@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, TextInput, KeyboardAvoidingView, Platform, Modal
+  View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, Modal
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,6 +15,8 @@ import { useDailyUpdateStore } from '../../src/store/dailyUpdateStore';
 import { useProjectStore } from '../../src/store/projectStore';
 import { DailyUpdate } from '../../src/types';
 import { useAuthStore } from '../../src/store/authStore';
+import { Alert } from '../../src/utils/alert';
+
 
 export default function DailyUpdatesScreen() {
   const insets = useSafeAreaInsets();

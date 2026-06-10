@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert
+  View, Text, StyleSheet, ScrollView, TouchableOpacity
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,6 +14,8 @@ import { MOCK_MEETINGS } from '../../src/data/mockData';
 import { useMeetingStore } from '../../src/store/meetingStore';
 import { useProjectStore } from '../../src/store/projectStore';
 import { useAuthStore } from '../../src/store/authStore';
+import { Alert } from '../../src/utils/alert';
+
 
 const TIME_SLOTS = ['09:00 AM', '10:00 AM', '11:00 AM', '02:00 PM', '03:00 PM', '04:00 PM'];
 const DAYS = ['Mon\nJun 2', 'Tue\nJun 3', 'Wed\nJun 4', 'Thu\nJun 5', 'Fri\nJun 6'];

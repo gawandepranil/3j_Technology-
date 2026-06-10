@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert
+  View, Text, StyleSheet, ScrollView, TouchableOpacity
 } from 'react-native';
 import { useProjectStore } from '../../src/store/projectStore';
 import { useAuthStore } from '../../src/store/authStore';
@@ -13,6 +13,8 @@ import { Badge } from '../../src/components/ui/Badge';
 import { Button } from '../../src/components/ui/Button';
 import { Colors, Typography, Spacing, BorderRadius } from '../../src/theme/tokens';
 import { MOCK_PROJECTS, MOCK_MILESTONES } from '../../src/data/mockData';
+import { Alert } from '../../src/utils/alert';
+
 
 export default function ClientProjects() {
   const insets = useSafeAreaInsets();

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   TextInput,
   Animated,
   Easing,
@@ -19,6 +18,8 @@ import { useAuthStore } from '../../src/store/authStore';
 import { authService } from '../../src/api/authService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Alert } from '../../src/utils/alert';
+
 
 const { width: SW } = Dimensions.get('window');
 

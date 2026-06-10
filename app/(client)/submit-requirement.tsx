@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity,
-  Alert, KeyboardAvoidingView, Platform, ActivityIndicator,
+  KeyboardAvoidingView, Platform, ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +15,8 @@ import { ProjectType } from '../../src/types';
 import { useAuthStore } from '../../src/store/authStore';
 import { projectService } from '../../src/api/projectService';
 import { requirementService } from '../../src/api/requirementService';
+import { Alert } from '../../src/utils/alert';
+
 
 const PROJECT_TYPES: { value: ProjectType; label: string; icon: string }[] = [
   { value: 'web_development', label: 'Web Development', icon: 'globe-outline' },
