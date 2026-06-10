@@ -1,5 +1,31 @@
 # Complete Setup Guide: 3J Business Management Platform
 
+## ⚡ Quick Start (5 minutes)
+
+For experienced developers who know the stack:
+
+```bash
+# 1. Start database
+docker-compose up -d
+
+# 2. Setup backend
+cd backend
+python -m venv venv
+venv\Scripts\activate  # Windows (or source venv/bin/activate on Mac/Linux)
+pip install -r requirements.txt
+python init_db.py
+python -m uvicorn main:app --reload
+
+# 3. In new terminal, setup frontend
+npm install
+npm start
+# Choose platform: a (Android), i (iOS), w (Web)
+```
+
+**Login:** `admin@3j.com` / `admin123`
+
+---
+
 ## Project Structure
 
 ```
@@ -65,9 +91,10 @@ Leads (id, company, status, contact_info)
 
 ### Prerequisites
 - Node.js 18+
-- Python 3.9+
-- PostgreSQL 12+ (or Docker Desktop)
+- Python 3.10+ (3.9 may have compatibility issues)
+- PostgreSQL 12+ (or Docker Desktop for easier setup)
 - VS Code
+- Git (for pushing to GitHub)
 
 ### Step 1: Setup PostgreSQL
 
@@ -100,24 +127,34 @@ cd backend
 # Create virtual environment
 python -m venv venv
 
-# Activate it
+# Activate virtual environment
 # Windows:
-venv\\Scripts\\activate
+venv\Scripts\activate
 # macOS/Linux:
 source venv/bin/activate
 
 # Install dependencies
 pip install -r requirements.txt
 
+# Verify installation (should list all packages)
+pip list
+
 # Initialize database with sample data
+# ⚠️ WARNING: This will clear all existing data!
 python init_db.py
 
-# Start server
+# Check for success message like:
+# "✅ Database initialized successfully!"
+
+# Start backend server (pick one)
+python -m uvicorn main:app --reload
+# OR
 python main.py
 ```
 
 Server runs at: http://localhost:8000
-API Docs: http://localhost:8000/docs
+API Interactive Docs: http://localhost:8000/docs (Swagger UI - try endpoints here!)
+Alternative Docs: http://localhost:8000/redoc
 
 ### Step 3: Setup Frontend
 
@@ -125,16 +162,21 @@ API Docs: http://localhost:8000/docs
 # From project root
 npm install
 
-# Create .env file (already exists with defaults)
-# Update API_URL if needed
+# Check .env file - it should have API_URL configured
+# .env file example:
+# EXPO_PUBLIC_API_URL=http://localhost:8000
+
+# For Android Emulator (if using Android):
+# Change localhost to your machine's IP address (e.g., http://192.168.x.x:8000)
+# Or use 10.0.2.2 if using Android Studio emulator
 
 # Start Expo
 npm start
 
 # Then choose:
-# Press 'i' for iOS
-# Press 'a' for Android
-# Press 'w' for Web
+# Press 'i' for iOS (http://localhost:8000 works)
+# Press 'a' for Android (use machine IP or 10.0.2.2)
+# Press 'w' for Web (http://localhost:8000 works)
 ```
 
 ## API Usage
@@ -152,7 +194,7 @@ POST http://localhost:8000/api/users/register
 }
 ```
 
-2. **Login:**
+2. **Login with Sample Data:**
 ```bash
 POST http://localhost:8000/api/users/login
 {
@@ -166,9 +208,19 @@ Response:
 {
   "access_token": "eyJhbGc...",
   "token_type": "bearer",
-  "user": { "id": 1, "name": "Admin", "email": "admin@3j.com", "role": "admin" }
+  "user": { 
+    "id": 1, 
+    "name": "Admin User", 
+    "email": "admin@3j.com", 
+    "role": "admin" 
+  }
 }
 ```
+
+**Test Login Accounts:**
+- Admin: `admin@3j.com` / `admin123`
+- Client: `client@company.com` / `client123`
+- Employee: `john@3j.com` / `password123`
 
 ### Token Storage
 
@@ -203,17 +255,20 @@ export function ProjectList() {
 
 ## Sample Data
 
-After running `init_db.py`, the database includes:
+After running `python init_db.py`, the database includes:
 
 **Users:**
-- admin@3j.com / admin123 (Admin)
-- client@company.com / client123 (Client)
-- 4 Employees with password: password123
+- admin@3j.com / admin123 (Admin role)
+- client@company.com / client123 (Client role)
+- john@3j.com / password123 (Employee - Senior Developer)
+- jane@3j.com / password123 (Employee - Project Manager)
+- mike@3j.com / password123 (Employee - Designer)
+- sarah@3j.com / password123 (Employee - QA Engineer)
 
 **Projects:**
-- Website Redesign
-- Mobile App
-- Cloud Migration
+- Website Redesign (In Progress)
+- Mobile App (Planning)
+- Cloud Migration (Planning)
 
 **Leads:**
 - Tech Startup Inc (New)
@@ -248,10 +303,25 @@ export function Dashboard() {
 
 ## Troubleshooting
 
+### API Connection Issues
+
+**For Android Emulator:**
+- Default: `http://10.0.2.2:8000` (special mapping for emulator)
+- Or use your machine IP: `http://192.168.x.x:8000`
+- Update `EXPO_PUBLIC_API_URL` in `.env` file
+
+**For iOS Simulator:**
+- Use: `http://localhost:8000` (simulator can access host localhost)
+
+**For Web:**
+- Use: `http://localhost:8000` (runs in browser on same machine)
+
 ### "Connection refused" error
-- Ensure PostgreSQL is running
-- Check DATABASE_URL in `.env`
-- Docker: `docker-compose ps` to verify services
+- Ensure PostgreSQL is running: `docker-compose ps`
+- Ensure backend is running: `python -m uvicorn main:app --reload`
+- Check DATABASE_URL in `.env` is correct
+- Verify API URL in frontend `.env` matches your setup
+- Docker: `docker-compose logs postgres` to check database logs
 
 ### "Token expired" 401 error
 - Token expired, user must re-login
@@ -265,6 +335,21 @@ export function Dashboard() {
 ### "Module not found" errors
 - Run `npm install` to install dependencies
 - Run `pip install -r requirements.txt` for backend
+- Ensure you activated the Python virtual environment
+
+### Backend won't start (Windows PowerShell)
+- If venv activation fails, try: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+- Then: `.\venv\Scripts\Activate.ps1`
+- Or use Git Bash instead of PowerShell
+
+### Frontend blank screen
+- Check browser console for errors (`npm start` → `w` for web)
+- Verify backend is running: `http://localhost:8000/health`
+- Check EXPO_PUBLIC_API_URL in `.env` file
+
+### Database already initialized
+- Delete data: `python init_db.py` (will clear and reinitialize)
+- Or access PgAdmin at `http://localhost:5050` to manually manage
 
 ## Development Workflow
 
@@ -331,7 +416,21 @@ pg_dump 3j_db > backup.sql
 psql 3j_db < backup.sql
 ```
 
-## Performance Tips
+## Important Files
+
+- **`.env` (Frontend)** - API URL configuration (don't commit if it has secrets)
+- **`backend/.env`** - Database credentials and JWT secret (⚠️ NEVER commit to Git!)
+- **`.gitignore`** - Prevents committing sensitive files (automatically configured)
+
+- [ ] PostgreSQL running: `docker-compose ps` shows containers as "healthy"
+- [ ] Backend started: Can access `http://localhost:8000/health` (returns `{"status": "healthy"}`)
+- [ ] API docs accessible: `http://localhost:8000/docs` loads Swagger UI
+- [ ] Database initialized: Can login with `admin@3j.com / admin123`
+- [ ] Frontend starts: `npm start` shows Expo menu
+- [ ] Frontend connects: Can login without connection errors
+- [ ] Sample data loaded: Can see projects and leads in the app after login
+
+---
 
 1. Add database indexes on frequently queried fields
 2. Implement pagination for large datasets
@@ -340,22 +439,53 @@ psql 3j_db < backup.sql
 
 ## Security Checklist
 
-- [ ] Change SECRET_KEY in production
-- [ ] Use HTTPS in production
-- [ ] Restrict CORS to specific origins
-- [ ] Implement rate limiting
-- [ ] Validate all inputs on backend
-- [ ] Use environment variables for secrets
-- [ ] Implement refresh token mechanism
-- [ ] Add logging and monitoring
+**Before Production Deployment:**
+
+- [ ] **Change SECRET_KEY** in `backend/.env` (currently: "your-super-secret-key-change-this-in-production")
+- [ ] **Use HTTPS** - Update API URLs from `http://` to `https://` in production
+- [ ] **Restrict CORS** - Update `allow_origins=["*"]` in `backend/main.py` to specific frontend domain(s)
+- [ ] **Environment Variables** - Never commit `.env` files to Git (already in `.gitignore`)
+- [ ] **Validate All Inputs** - Backend validates all Pydantic models (✅ already done)
+- [ ] **Implement Rate Limiting** - Add rate limiting middleware for API endpoints
+- [ ] **Add Refresh Token** - Implement refresh token mechanism (currently: 30-min expiry only)
+- [ ] **Use Secure Storage** - Frontend uses `expo-secure-store` for sensitive data (✅ already configured)
+- [ ] **Password Hashing** - All passwords hashed with bcrypt (✅ already done)
+- [ ] **Logging & Monitoring** - Add logging for auth attempts and errors
+- [ ] **Disable Debug Mode** - Set `reload=False` in production for Uvicorn
 
 ## Next Steps
 
-1. ✓ Backend API with FastAPI
-2. ✓ PostgreSQL Database
-3. ✓ React Native Frontend Integration
-4. → Build authentication screens
-5. → Implement data validation
-6. → Add error handling UI
-7. → Test on physical devices
-8. → Deploy to production
+1. ✅ Backend API with FastAPI - **COMPLETE**
+2. ✅ PostgreSQL Database - **COMPLETE**
+3. ✅ React Native Frontend Integration - **COMPLETE**
+4. ✅ Authentication system (JWT + bcrypt) - **COMPLETE**
+5. ✅ Sample data initialization - **COMPLETE**
+6. → Customize design and branding
+7. → Add more features (notifications, real-time updates, etc.)
+8. → Implement comprehensive error handling UI
+9. → Test on physical devices and multiple platforms
+10. → Performance optimization and profiling
+11. → Deploy to production (Heroku for backend, App Store/Play Store for frontend)
+
+---
+
+## Getting Help
+
+- **FastAPI Docs**: https://fastapi.tiangolo.com/
+- **Expo Docs**: https://docs.expo.dev/versions/v56.0.0/
+- **React Native**: https://reactnative.dev/
+- **Zustand**: https://zustand.surge.sh/
+- **SQLAlchemy**: https://docs.sqlalchemy.org/
+
+---
+
+## Version Info
+
+- Expo: ~56.0.8
+- React Native: 0.85.3
+- React: 19.2.3
+- FastAPI: 0.136.3
+- SQLAlchemy: 2.0.50
+- PostgreSQL: 15 (Docker)
+- Node.js: 18+ (recommended)
+- Python: 3.10+ (3.9 may have issues)
